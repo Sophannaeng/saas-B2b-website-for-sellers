@@ -12,7 +12,7 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased selection:bg-blue-600 selection:text-white">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-md flex flex-col pb-28 relative">
+    <div id="main-storefront-container" class="max-w-md mx-auto bg-white min-h-screen shadow-md flex flex-col pb-28 relative transition-all duration-300">
         
         <div class="bg-gray-50 border-b px-4 py-2 flex justify-end items-center gap-1.5 text-[10px] font-black">
             <a href="/{{ seller.username }}/set-lang?lang=km" class="px-2 py-1 rounded-md border {% if lang == 'km' %}bg-blue-600 text-white border-blue-600{% else %}bg-white text-gray-500{% endif %}">🇰🇭 KM</a>
@@ -32,6 +32,7 @@
             <button id="pill-all" onclick="filterCategorySelection('all')" class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black border transition-all bg-blue-600 text-white border-blue-600">
                 {{ txt.all_pill }}
             </button>
+            
             {% for cat in categories %}
             <button id="pill-{{ cat.id }}" onclick="filterCategorySelection('{{ cat.id }}')" class="pill-btn flex-shrink-0 px-4 py-2 rounded-xl text-xs font-black border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-all">
                 {{ cat.name }}
@@ -50,27 +51,71 @@
             </div>
         </main>
 
-        <div id="floating-cart-bar" class="hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 shadow-[0_-12px_40px_rgba(0,0,0,0.12)] p-4 z-50 animate-slide-up rounded-t-3xl space-y-3">
-            
-            <div onclick="toggleCartDrawerDetailsView()" class="flex justify-between items-center cursor-pointer border-b border-gray-50 pb-2">
-                <div>
-                    <div class="text-[9px] text-gray-400 font-black uppercase tracking-wider">{{ txt.cart_summary }}</div>
-                    <div class="flex items-baseline gap-1.5 mt-0.5">
-                        <span id="cart-total-qty" class="text-xs font-black text-gray-900 bg-gray-100 px-2 py-0.5 rounded-lg">0</span>
-                        <span id="cart-total-price" class="text-base font-black text-blue-600">$0.00</span>
+        <div id="product-detail-modal" class="hidden fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 pb-[114px] sm:pb-[114px] transition-opacity duration-300">
+            <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[75vh] animate-slide-up relative border-b border-gray-100">
+                
+                <button onclick="closeProductDetailModal()" class="absolute top-4 right-4 z-[70] w-9 h-9 flex items-center justify-center rounded-full bg-white text-rose-600 font-black text-base shadow-lg border border-gray-100 active:scale-95 transition-all">✕</button>
+
+                <div class="overflow-y-auto no-scrollbar pb-6">
+                    <div class="relative pt-[100%] bg-gray-100 border-b overflow-hidden group">
+                        <div id="modal-carousel-track" class="absolute inset-0 flex transition-transform duration-300 ease-out"></div>
+                        <button id="carousel-prev-btn" onclick="shiftCarouselSlide(-1)" class="hidden absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-md text-gray-800 font-bold items-center justify-center hover:bg-white text-sm z-10">◀</button>
+                        <button id="carousel-next-btn" onclick="shiftCarouselSlide(1)" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-md text-gray-800 font-bold items-center justify-center hover:bg-white text-sm z-10">▶</button>
+                        <div id="carousel-dots-indicator" class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10"></div>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+                        <div class="flex justify-between items-start gap-4">
+                            <div>
+                                <h2 id="modal-product-name" class="text-lg font-black text-gray-900 leading-snug">Product Title</h2>
+                                <p id="modal-product-desc" class="text-xs text-gray-500 font-medium leading-relaxed mt-2 whitespace-pre-line">Description details...</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 border border-gray-100 p-3 rounded-2xl flex justify-between items-center">
+                            <div>
+                                <span class="text-[9px] text-gray-400 uppercase font-black tracking-wider block">Price / តម្លៃ</span>
+                                <span id="modal-product-price" class="text-lg font-black text-blue-600">$0.00</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[9px] text-gray-400 uppercase font-black tracking-wider block">Riel / រៀល</span>
+                                <span id="modal-product-riel" class="text-sm font-black text-gray-500">0 ៛</span>
+                            </div>
+                        </div>
+
+                        <div id="modal-qty-counter-container" class="pt-1"></div>
                     </div>
                 </div>
-                <div id="drawer-arrow-indicator" class="text-xs font-bold text-gray-400 bg-gray-50 border px-2 py-1 rounded-lg transition-transform duration-300">▲</div>
             </div>
-
-            <div id="cart-drawer-items-list" class="hidden max-h-40 overflow-y-auto divide-y divide-gray-50 no-scrollbar py-1"></div>
-
-            <button onclick="checkoutViaTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 rounded-xl shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                {{ txt.checkout_btn }}
-            </button>
         </div>
 
-    </div>
+        <div id="floating-cart-bar" class="hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-lg border-t border-gray-100 shadow-[0_-15px_40px_rgba(0,0,0,0.15)] p-4 pb-6 z-[70] animate-slide-up rounded-t-3xl flex flex-col gap-3">
+            
+            <div onclick="toggleCartDrawerDetailsView()" class="w-full bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/20 text-rose-700 px-4 py-3.5 rounded-2xl flex justify-between items-center cursor-pointer active:scale-[0.99] transition-all select-none">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-base">🛒</span>
+                    <span class="text-xs font-black tracking-wide uppercase">
+                        {% if lang == 'en' %}View Cart{% else %}មើលកន្ត្រក{% endif %}
+                    </span>
+                    <span id="cart-total-qty" class="text-[11px] font-black bg-rose-600 text-white px-2.5 py-0.5 rounded-full shadow-xs">0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="cart-total-price" class="text-sm font-black text-blue-600">$0.00</span>
+                    <span id="drawer-arrow-indicator" class="text-[10px] font-black text-rose-500/60 bg-rose-500/10 px-2 py-0.5 rounded-md transition-transform duration-300">▲</span>
+                </div>
+            </div>
+
+            <div id="cart-drawer-items-list" class="hidden space-y-3 pb-1 border-b border-gray-100 w-full">
+                <div id="cart-items-rows-container" class="divide-y divide-gray-100 max-h-40 overflow-y-auto no-scrollbar py-1"></div>
+            </div>
+            
+            <button onclick="checkoutViaTelegram()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                {{ txt.checkout_btn }}
+            </button>
+
+        </div>
+
+    </div> 
 
     <script>
         const catalogItems = {{ products_data | tojson | safe }};
@@ -103,17 +148,18 @@
                 const coverImg = p.images.length > 0 && p.images[0] ? p.images[0] : "https://placehold.co/300x300?text=No+Photo";
                 const currentQty = shoppingCart[p.id] || 0;
                 const card = document.createElement("div");
+                card.id = `product-card-${p.id}`;
                 card.className = "bg-white border border-gray-100 rounded-2xl overflow-hidden flex flex-col shadow-xs hover:shadow-md transition-all duration-300";
                 
                 let actionArea = `
-                    <button onclick="modifyCartItemQty(${p.id}, 1)" class="w-full mt-2 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-bold py-2 rounded-xl text-[11px] transition-all flex items-center justify-center gap-1">
+                    <button onclick="event.stopPropagation(); modifyCartItemQty(${p.id}, 1);" class="w-full mt-2 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-bold py-2 rounded-xl text-[11px] transition-all flex items-center justify-center gap-1">
                         {{ txt.add_to_cart }}
                     </button>
                 `;
 
                 if (currentQty > 0) {
                     actionArea = `
-                        <div class="flex items-center justify-between border border-blue-200 mt-2 rounded-xl overflow-hidden bg-blue-50/50">
+                        <div class="flex items-center justify-between border border-blue-200 mt-2 rounded-xl overflow-hidden bg-blue-50/50" onclick="event.stopPropagation();">
                             <button onclick="modifyCartItemQty(${p.id}, -1)" class="px-2.5 py-1.5 font-black text-blue-600 hover:bg-blue-100 text-sm">-</button>
                             <span class="font-black text-xs text-gray-900">${currentQty}</span>
                             <button onclick="modifyCartItemQty(${p.id}, 1)" class="px-2.5 py-1.5 font-black text-blue-600 hover:bg-blue-100 text-sm">+</button>
@@ -122,10 +168,10 @@
                 }
 
                 card.innerHTML = `
-                    <div class="relative pt-[100%] bg-gray-50 border-b overflow-hidden">
+                    <div class="relative pt-[100%] bg-gray-50 border-b overflow-hidden cursor-pointer" onclick="openProductDetailModal(${p.id})">
                         <img src="${coverImg}" class="absolute inset-0 w-full h-full object-cover">
                     </div>
-                    <div class="p-3 flex-1 flex flex-col justify-between space-y-2">
+                    <div class="p-3 flex-1 flex flex-col justify-between space-y-2 cursor-pointer" onclick="openProductDetailModal(${p.id})">
                         <div>
                             <h4 class="font-bold text-xs text-gray-800 line-clamp-2 leading-snug">${p.name}</h4>
                             <p class="text-[10px] text-gray-400 font-medium line-clamp-1 mt-0.5">${p.description}</p>
@@ -143,36 +189,17 @@
             updateFloatingCartUiSummary();
         }
 
-        function modifyCartItemQty(productId, delta) {
-            let qty = (shoppingCart[productId] || 0) + delta;
-            if (qty <= 0) delete shoppingCart[productId];
-            else shoppingCart[productId] = qty;
-            renderStorefrontCatalogView();
-        }
-
-        function toggleCartDrawerDetailsView() {
-            const listContainer = document.getElementById("cart-drawer-items-list");
-            const indicator = document.getElementById("drawer-arrow-indicator");
-            isDrawerExpanded = !isDrawerExpanded;
-
-            if (isDrawerExpanded) {
-                listContainer.classList.remove("hidden");
-                indicator.innerText = "▼";
-            } else {
-                listContainer.classList.add("hidden");
-                indicator.innerText = "▲";
-            }
-        }
-
         function updateFloatingCartUiSummary() {
             const cartBar = document.getElementById("floating-cart-bar");
             const qtyText = document.getElementById("cart-total-qty");
             const priceText = document.getElementById("cart-total-price");
-            const listContainer = document.getElementById("cart-drawer-items-list");
+            const listContainer = document.getElementById("cart-items-rows-container"); 
+            const drawerContainer = document.getElementById("cart-drawer-items-list");
             
             let totalQty = 0;
             let totalPrice = 0;
-            listContainer.innerHTML = "";
+            
+            if (listContainer) listContainer.innerHTML = "";
 
             Object.keys(shoppingCart).forEach(id => {
                 const product = catalogItems.find(item => String(item.id) === String(id));
@@ -182,34 +209,43 @@
                     totalQty += itemQty;
                     totalPrice += itemCost;
 
-                    const row = document.createElement("div");
-                    row.className = "flex justify-between items-center py-2 text-xs font-bold text-gray-700";
-                    row.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md text-[10px]">x${itemQty}</span>
-                            <span class="truncate max-w-[180px]">${product.name}</span>
-                        </div>
-                        <span class="text-gray-900 font-mono">$${itemCost.toFixed(2)}</span>
-                    `;
-                    listContainer.appendChild(row);
+                    if (listContainer) {
+                        const row = document.createElement("div");
+                        // Fixed Left-aligned structure with 4-column wide selector for bigger finger targets
+                        row.className = "grid grid-cols-12 items-center py-3 text-xs font-bold text-gray-700 border-b border-gray-50/80 gap-1";
+                        row.innerHTML = `
+                            <div class="col-span-5 flex items-center gap-2 min-w-0">
+                                <span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md text-[10px] font-black text-center min-w-[22px]">x${itemQty}</span>
+                                <span class="truncate text-gray-800 font-bold tracking-tight">${product.name}</span>
+                            </div>
+                            <div class="col-span-4 flex justify-start pl-1">
+                                <div class="flex items-center bg-gray-100/90 border border-gray-200/60 rounded-xl overflow-hidden select-none w-full max-w-[90px]">
+                                    <button onclick="modifyCartItemQty(${product.id}, -1)" class="w-1/3 py-1.5 text-gray-500 hover:bg-gray-200/80 hover:text-blue-600 font-black text-xs text-center transition-all active:scale-90">-</button>
+                                    <span class="w-1/3 text-[11px] font-black text-gray-800 text-center">${itemQty}</span>
+                                    <button onclick="modifyCartItemQty(${product.id}, 1)" class="w-1/3 py-1.5 text-gray-500 hover:bg-gray-200/80 hover:text-blue-600 font-black text-xs text-center transition-all active:scale-90">+</button>
+                                </div>
+                            </div>
+                            <span class="col-span-3 text-gray-900 font-black font-mono text-right">$${itemCost.toFixed(2)}</span>
+                        `;
+                        listContainer.appendChild(row);
+                    }
                 }
             });
 
             if (totalQty > 0) {
-                cartBar.classList.remove("hidden");
-                qtyText.innerText = totalQty;
-                priceText.innerText = `$${totalPrice.toFixed(2)}`;
+                if (cartBar) cartBar.classList.remove("hidden");
+                if (qtyText) qtyText.innerText = totalQty;
+                if (priceText) priceText.innerText = `$${totalPrice.toFixed(2)}`;
             } else {
-                cartBar.classList.add("hidden");
-                listContainer.classList.add("hidden");
+                if (cartBar) cartBar.classList.add("hidden");
+                if (drawerContainer) drawerContainer.classList.add("hidden");
                 isDrawerExpanded = false;
                 const indicator = document.getElementById("drawer-arrow-indicator");
                 if (indicator) indicator.innerText = "▲";
             }
         }
-
+        
         function checkoutViaTelegram() {
-            // FIXED: Automatically structures invoice language matching user selection context
             let invoiceSummary = "";
             if ("{{ lang }}" === "en") {
                 invoiceSummary = `🛒 *New Order From Store: {{ seller.shop_name }}*\n\n`;
@@ -242,6 +278,154 @@
 
             const targetTelegramBase = "{{ seller.telegram_link if seller.telegram_link else 'https://t.me/sky_fashion' }}";
             window.open(`${targetTelegramBase}?text=${encodeURIComponent(invoiceSummary)}&parse_mode=Markdown`, '_blank');
+        }
+
+        let activeCarouselIndex = 0;
+        let activeModalProductImages = [];
+
+        function openProductDetailModal(productId) {
+            const product = catalogItems.find(item => Number(item.id) === Number(productId));
+            if (!product) return;
+
+            document.getElementById("modal-product-name").innerText = product.name;
+            document.getElementById("modal-product-desc").innerText = product.description || "";
+            document.getElementById("modal-product-price").innerText = `$${product.price.toFixed(2)}`;
+            document.getElementById("modal-product-riel").innerText = `${product.riel_price} ៛`;
+
+            const track = document.getElementById("modal-carousel-track");
+            const dots = document.getElementById("carousel-dots-indicator");
+            track.innerHTML = "";
+            dots.innerHTML = "";
+            
+            activeModalProductImages = product.images.length > 0 && product.images[0] ? product.images : ["https://placehold.co/500x500?text=No+Photo"];
+            activeCarouselIndex = 0;
+
+            activeModalProductImages.forEach((imgUrl, idx) => {
+                const slide = document.createElement("div");
+                slide.className = "w-full h-full flex-shrink-0 relative hidden";
+                if (idx === 0) slide.classList.remove("hidden");
+                slide.style.minWidth = "100%";
+                
+                const img = document.createElement("img");
+                img.src = imgUrl;
+                img.className = "absolute inset-0 w-full h-full object-cover";
+                slide.appendChild(img);
+                track.appendChild(slide);
+
+                const dot = document.createElement("div");
+                dot.id = `carousel-dot-${idx}`;
+                dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-blue-600 w-4' : 'bg-gray-300'}`;
+                dots.appendChild(dot);
+            });
+
+            const prevBtn = document.getElementById("carousel-prev-btn");
+            const nextBtn = document.getElementById("carousel-next-btn");
+            if (activeModalProductImages.length > 1) {
+                prevBtn.classList.replace("hidden", "flex");
+                nextBtn.classList.replace("hidden", "flex");
+            } else {
+                prevBtn.classList.replace("flex", "hidden");
+                nextBtn.classList.replace("flex", "hidden");
+            }
+
+            renderModalActionButtonEngine(product);
+
+            const modal = document.getElementById("product-detail-modal");
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+
+        function renderModalActionButtonEngine(product) {
+            const wrapper = document.getElementById("modal-qty-counter-container");
+            if (!wrapper) return;
+            
+            const currentQty = shoppingCart[product.id] || 0;
+
+            if (currentQty === 0) {
+                wrapper.innerHTML = `
+                    <button onclick="modifyCartItemQty(${product.id}, 1); renderModalActionButtonEngineById(${product.id});" class="w-full bg-blue-600 text-white font-black text-sm py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                        ➕ {% if lang == 'en' %}Add to Cart{% else %}បន្ថែមទៅកន្ត្រក{% endif %}
+                    </button>
+                `;
+            } else {
+                wrapper.innerHTML = `
+                    <div class="flex items-center justify-between border border-blue-200 rounded-2xl overflow-hidden bg-blue-50/50 p-0.5">
+                        <button onclick="modifyCartItemQty(${product.id}, -1); renderModalActionButtonEngineById(${product.id});" class="px-6 py-3.5 font-black text-blue-600 hover:bg-blue-100 text-base select-none">-</button>
+                        <span class="font-black text-base text-gray-900">${currentQty}</span>
+                        <button onclick="modifyCartItemQty(${product.id}, 1); renderModalActionButtonEngineById(${product.id});" class="px-6 py-3.5 font-black text-blue-600 hover:bg-blue-100 text-base select-none">+</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderModalActionButtonEngineById(productId) {
+            const product = catalogItems.find(item => Number(item.id) === Number(productId));
+            if (product) renderModalActionButtonEngine(product);
+        }
+
+        function shiftCarouselSlide(direction) {
+            const slides = document.getElementById("modal-carousel-track").children;
+            if (slides.length <= 1) return;
+
+            slides[activeCarouselIndex].classList.add("hidden");
+            activeCarouselIndex += direction;
+            if (activeCarouselIndex >= slides.length) activeCarouselIndex = 0;
+            if (activeCarouselIndex < 0) activeCarouselIndex = slides.length - 1;
+
+            slides[activeCarouselIndex].classList.remove("hidden");
+
+            activeModalProductImages.forEach((_, idx) => {
+                const dot = document.getElementById(`carousel-dot-${idx}`);
+                if (idx === activeCarouselIndex) {
+                    dot.className = "w-4 h-2 rounded-full bg-blue-600 transition-all duration-300";
+                } else {
+                    dot.className = "w-2 h-2 rounded-full bg-gray-300 transition-all duration-300";
+                }
+            });
+        }
+
+        let lastInteractedProductId = null;
+
+        function modifyCartItemQty(productId, delta) {
+            lastInteractedProductId = productId;
+
+            let qty = (shoppingCart[productId] || 0) + delta;
+            if (qty <= 0) delete shoppingCart[productId];
+            else shoppingCart[productId] = qty;
+            
+            renderStorefrontCatalogView();
+            renderModalActionButtonEngineById(productId);
+        }
+
+        function toggleCartDrawerDetailsView() {
+            const listContainer = document.getElementById("cart-drawer-items-list");
+            const indicator = document.getElementById("drawer-arrow-indicator");
+            const mainContainer = document.getElementById("main-storefront-container");
+            isDrawerExpanded = !isDrawerExpanded;
+
+            if (isDrawerExpanded) {
+                listContainer.classList.remove("hidden");
+                indicator.innerText = "▼"; // Swapped to match top-to-bottom physics row expanding
+                if (mainContainer) mainContainer.style.paddingBottom = "280px";
+                
+                if (lastInteractedProductId) {
+                    setTimeout(() => {
+                        const activeCard = document.getElementById(`product-card-${lastInteractedProductId}`);
+                        if (activeCard) {
+                            activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 100);
+                }
+            } else {
+                listContainer.classList.add("hidden");
+                indicator.innerText = "▲";
+                if (mainContainer) mainContainer.style.paddingBottom = "112px";
+            }
+        }
+
+        function closeProductDetailModal() {
+            document.getElementById("product-detail-modal").classList.add("hidden");
+            document.body.style.overflow = "auto";
         }
 
         function filterCategorySelection(targetId) {
