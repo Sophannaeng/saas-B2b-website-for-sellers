@@ -1,0 +1,13 @@
+# Ignore the local SQLite database file
+test_store.db
+test_store.db-journal
+
+# Ignore uploaded merchant photos and logos locally
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+venv/
+.env

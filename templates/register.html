@@ -1,47 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Launch Your Store Link</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Apply fonts globally across your entire application */
+        body,
+        input,
+        button,
+        select,
+        textarea {
+            font-family: 'Inter', 'Kantumruy Pro', sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.01em;
+            /* Gives English text a sleek tech appearance */
+        }
+
+        /* Refine font-weights specifically for titles to make them pop */
+        h1,
+        h2,
+        h3,
+        h4,
+        .title {
+            font-family: 'Inter', 'Kantumruy Pro', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.02em;
+            color: #1a202c;
+            /* Deep slate instead of harsh pure black */
+        }
+    </style>
+    <title>បង្កើត website ហាងរបស់អ្នក </title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4 text-gray-800 font-sans">
     <div class="bg-white p-6 sm:p-8 rounded-3xl border shadow-xl w-full max-w-sm space-y-6">
         <div>
-            <h1 class="text-xl font-black tracking-tight text-gray-900">Create Storefront Link 🇰🇭</h1>
+            <h1 class="text-xl font-black tracking-tight text-gray-900">Create Store​​ Website 🇰🇭</h1>
             <p class="text-xs text-gray-400 mt-1">Get your digital menu link live in seconds.</p>
         </div>
 
         <form action="/register-shop" method="POST" class="space-y-4 text-xs font-bold">
             <div>
-                <label class="block text-gray-400 uppercase mb-1 tracking-wide">Choose Store URL Link Slug</label>
+                <label class="block text-gray-400 uppercase mb-1 tracking-wide">Choose Store URL Link</label>
                 <div class="flex items-center border rounded-xl overflow-hidden bg-gray-50 p-1">
-                    <span class="text-gray-400 font-mono px-2 text-sm">shop.kh/</span>
-                    <input type="text" name="username" required placeholder="my_shop_name" class="w-full bg-transparent py-2 px-1 text-sm outline-none text-gray-800 font-mono">
+                    <span class="text-gray-400 font-mono px-2 text-sm">alphaKh.store/</span>
+                    <input type="text" name="username" required placeholder="my_shop_name"
+                        class="w-full bg-transparent py-2 px-1 text-sm outline-none text-gray-800 font-mono">
                 </div>
             </div>
 
             <div>
-                <label class="block text-gray-400 uppercase mb-1 tracking-wide">Public Shop Display Title</label>
-                <input type="text" name="shop_name" required placeholder="e.g., Vanna Boutique KH" class="w-full border p-3 rounded-xl text-sm outline-none">
+                <label class="block text-gray-400 uppercase mb-1 tracking-wide">Shop Name pulic​</label>
+                <input type="text" name="shop_name" required placeholder="ex: Vanna Boutique KH"
+                    class="w-full border p-3 rounded-xl text-sm outline-none">
             </div>
 
             <div>
-                <label class="block text-gray-400 uppercase mb-1 tracking-wide">Owner Phone Number</label>
-                <input type="tel" name="phone" required placeholder="e.g., 012345678" class="w-full border p-3 rounded-xl text-sm outline-none">
+                <label class="block text-gray-400 uppercase mb-1 tracking-wide">Seller Phone Number</label>
+                <div
+                    style="display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 8px; padding-left: 12px; background-color: #f7fafc;">
+                    <span style="color: #4a5568; font-weight: 500; margin-right: 8px;">+855</span>
+                    <input type="text" id="phone" name="phone" placeholder="12 345 678"
+                        style="border: none; outline: none; width: 100%; padding: 12px 4px; background: transparent;">
+                </div>
             </div>
 
             <div>
                 <label class="block text-gray-400 uppercase mb-1 tracking-wide">Create 4-Digit Security PIN</label>
-                <input type="password" name="pin_code" required pattern="[0-9]{4}" inputmode="numeric" maxlength="4" placeholder="e.g., 2525" class="w-full border p-3 rounded-xl text-sm outline-none tracking-widest text-center font-mono font-black text-gray-900 focus:border-blue-500">
-                <p class="text-[10px] text-gray-400 font-medium mt-1">This code protects your dashboard settings. Do not share it.</p>
+                <input type="password" name="pin_code" required pattern="[0-9]{4}" inputmode="numeric" maxlength="4"
+                    placeholder="ex: 2525"
+                    class="w-full border p-3 rounded-xl text-sm outline-none tracking-widest text-center font-mono font-black text-gray-900 focus:border-blue-500">
+                <p class="text-[10px] text-gray-400 font-medium mt-1">This code protects your dashboard settings. Do not
+                    share it.</p>
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 text-white font-black py-3.5 rounded-xl text-sm hover:bg-blue-700 transition-all shadow-md">
-                Launch 14-Day Free Trial 🚀
+            <button type="submit"
+                class="w-full bg-blue-600 text-white font-black py-3.5 rounded-xl text-sm hover:bg-blue-700 transition-all shadow-md">
+                Register the shop for free
             </button>
         </form>
     </div>
 </body>
+
 </html>
